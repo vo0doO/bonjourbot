@@ -12,8 +12,10 @@ class ProductsSpider(scrapy.Spider):
     name = 'products'
 
     start_urls = [
-        'https://bonjour-dv.ru/category/1',
-        # 'https://bonjour-dv.ru/category/26',
+        # 'https://bonjour-dv.ru/category/1',
+        'https://bonjour-dv.ru/category/26',  # бытовая техника 185 товаров
+        'https://bonjour-dv.ru/category/258',  # товары для животных 79 товаров
+        'https://bonjour-dv.ru/category/179',  # подарки и сувениры 202 товаров
         # 'https://bonjour-dv.ru/category/318',
         # 'https://bonjour-dv.ru/category/53',
     ]
@@ -21,7 +23,11 @@ class ProductsSpider(scrapy.Spider):
     def parse_product(self, response):
 
         def extr(q):
-            return response.css(q).get().strip()
+            text = response.css(q).get()
+            if text == None:
+                return "Отсутствует"
+            else:
+                return text.strip()
 
         title = extr('body meta[itemprop=description]::attr(content)')
         product_code = extr(
@@ -59,7 +65,10 @@ class ProductsSpider(scrapy.Spider):
         yield from response.follow_all(product_links, self.parse_product)
 
         # # список ссылок или одна ссылка пагинации
-        # pagination_links = [link.split('&')[0] for link in response.css(
-        #     '#PaginationRoot a::attr(href)').getall()]
-        # # обход ссылок пагинации
-        # yield from response.follow_all(pagination_links, self.parse)
+        pagination_links = [
+            link.split('&')[0] for link in response.css(
+                '#PaginationRoot a::attr(href)'
+            ).getall()
+        ]
+        # обход ссылок пагинации
+        yield from response.follow_all(pagination_links, self.parse)
