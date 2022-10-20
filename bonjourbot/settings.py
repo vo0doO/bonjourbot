@@ -64,7 +64,8 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
     'bonjourbot.pipelines.DublicatesPipeLine': 100,
-    'bonjourbot.pipelines.JsonWriterPipeline': 300,
+    'bonjourbot.pipelines.CsvWriterPipeline': 200,
+    'bonjourbot.pipelines.JsonWriterPipeline': 300
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

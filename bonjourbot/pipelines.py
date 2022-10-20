@@ -6,6 +6,7 @@
 
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
+import csv
 import json
 from scrapy.exceptions import DropItem
 
@@ -39,4 +40,28 @@ class JsonWriterPipeline:
     def process_item(self, item, spider):
         line = json.dumps(item, ensure_ascii=False,) + "\n"
         self.file.write(line)
+        return item
+
+
+class CsvWriterPipeline:
+
+    def open_spider(self, spider):
+        self.fieldnames = [
+            'title', 'product_code', 'sku', 'manufacturer',
+            'price', 'image_link', 'discount', 'brand', "full_price", "hash"
+        ]
+        self.file = open(
+            f"{spider.name}.csv", mode="w",
+            newline="", encoding='utf-8'
+        )
+        self.writer = csv.DictWriter(
+            self.file, fieldnames=self.fieldnames, dialect='excel-tab'
+        )
+        self.writer.writeheader()
+
+    def close_spider(self, spider):
+        self.file.close()
+
+    def process_item(self, item, spider):
+        self.writer.writerow(item)
         return item
