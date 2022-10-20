@@ -7,11 +7,25 @@
 # useful for handling different item types with a single interface
 # from itemadapter import ItemAdapter
 import json
+from scrapy.exceptions import DropItem
 
 
 class BonjourbotPipeline:
     def process_item(self, item, spider):
         return item
+
+
+class DublicatesPipeLine:
+
+    def __init__(self):
+        self.hash_seen = set()
+
+    def process_item(self, item, spider):
+        if item['hash'] in self.hash_seen:
+            raise DropItem(f"Обнаружен  дубликат ==> {item}")
+        else:
+            self.hash_seen.add(item["hash"])
+            return item
 
 
 class JsonWriterPipeline:
