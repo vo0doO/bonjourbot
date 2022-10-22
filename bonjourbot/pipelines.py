@@ -19,13 +19,13 @@ class BonjourbotPipeline:
 class DublicatesPipeLine:
 
     def __init__(self):
-        self.hash_seen = set()
+        self.sku_seen = set()
 
     def process_item(self, item, spider):
-        if item['hash'] in self.hash_seen:
+        if item['sku'] in self.sku_seen:
             raise DropItem(f"Обнаружен  дубликат ==> {item}")
         else:
-            self.hash_seen.add(item["hash"])
+            self.sku_seen.add(item["sku"])
             return item
 
 
@@ -48,7 +48,7 @@ class CsvWriterPipeline:
     def open_spider(self, spider):
         self.fieldnames = [
             'title', 'product_code', 'sku', 'manufacturer',
-            'price', 'image_link', 'discount', 'brand', "full_price", "hash"
+            'price', 'image_link', 'discount', 'brand', "full_price"
         ]
         self.file = open(
             f"{spider.name}.csv", mode="w",
